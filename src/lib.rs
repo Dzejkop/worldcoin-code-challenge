@@ -99,3 +99,33 @@ mod auth {
         })
     }
 }
+
+#[cfg(ignore)]
+mod example_usage {
+    fn setup_task() -> tokio::task::JoinHandle<()> {
+        tokio::spawn(async move {
+            loop {
+                let client = refresh_client("fdsasadf", "fdsasadf").await.unwrap();
+
+                let v = client
+                    .get("some_url")
+                    .send()
+                    .await
+                    .expect("Failed to send request")
+                    .json::<serde_json::Value>()
+                    .await
+                    .expect("Failed to deserialize");
+
+                do_something_with_result(v).await;
+
+                client
+                    .post("some_other_url")
+                    .send()
+                    .await
+                    .expect("Failed to send request");
+
+                tokio::time::sleep(Duration::from_secs(1)).await;
+            }
+        })
+    }
+}
